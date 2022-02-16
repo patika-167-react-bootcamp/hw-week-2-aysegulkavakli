@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>React Bootcamp Homework 2</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="col1">
+        <div class="addPerson">
+            <div class="inputs">
+                <input id="newUserName" placeholder="Name" type="text"/>
+                <input id="balance" placeholder="Balance" type="text"/>
+            </div>
+
+            <button class="addButton" onclick="return addUser()">Add User</button>
+        </div>
+        <div class="user-list">
+            <ul id="user-list"></ul>
+        </div>
+    </div>
+    <div class="col2">
+        <div class="addTransaction">
+            <div class="person">
+                <label>Sender</label>
+                <select id="sender-list">
+
+                </select>
+            </div>
+            <div class="person">
+                <label>Reciever</label>
+                <select id="reciever-list">
+
+                </select>
+            </div>
+            <div class="person">
+                <label>Amount</label>
+                <input id="amount" placeholder="Amount" type="number"/>
+            </div>
+            <button class="submitButton" onclick="return addTransaction()">Send</button>
+        </div>
+        <div class="transaction-history">
+            <ul id="transaction-history"></ul>
+        </div>
+
+    </div>
+</div>
+<script>
+    const state = {
+        userList: [],
+        transactionList: [],
+    }
+
+    function Li(list, user) {
+        list.forEach(function (item) {
+            const newLi = document.createElement("li");
+            newLi.innerText = `${item.name} has ${item.balance}tl`;
+            user.appendChild(newLi);
+
+        });
+    }
+
+    function Li2(list, user) {
+        list.forEach(function (item) {
+            const newLi = document.createElement("li");
+            newLi.innerText = `${item.message}`;
+            user.appendChild(newLi);
+
+        });
+    }
+
+    function Option(list, user) {
+        list.forEach(function (item) {
+            const newOption = document.createElement("option");
+            newOption.innerText = item.name;
+            newOption.setAttribute("value", item.name)
+            user.appendChild(newOption);
+        });
+    }
+
+    function renderUserList() {
+        const users = [document.getElementById("user-list")];
+        users.forEach(function (user) {
+            user.innerHTML = "";
+            Li(state.userList, user);
+            renderOption();
+        });
+    }
+
+    function renderTransactions() {
+        const transactions = [document.getElementById("transaction-history")];
+        transactions.forEach(function (transaction) {
+            transaction.innerHTML = "";
+            Li2(state.transactionList, transaction);
+
+        });
+    }
+
+    function renderOption() {
+        const transactionUsers = [document.getElementById("sender-list"), document.getElementById("reciever-list")];
+        transactionUsers.forEach(function (transactionUser) {
+            transactionUser.innerHTML = "";
+            Option(state.userList, transactionUser);
+        });
+    }
+
+    function setState(stateName, newValue) {
+        state[stateName] = newValue;
+        renderUserList();
+        renderTransactions();
+    }
+
+    function addUser() {
+        const userName = document.getElementById("newUserName").value;
+        const userBalance = document.getElementById("balance").value;
+        setState("userList", [
+            ...state.userList,
+            {
+                name: userName,
+                balance: userBalance,
+            },
+        ]);
+    }
+
+    function addTransaction() {
+        const senderName = document.getElementById("sender-list").value;
+        const recieverName = document.getElementById("reciever-list").value;
+        const amount = parseInt(document.getElementById("amount").value);
+        const sender = [...state.userList].find((u) => u.name === senderName);
+        const reciever = [...state.userList].find((u) => u.name === recieverName);
+
+        if (parseInt(sender.balance) >= amount) {
+            setState("transactionList", [
+                ...state.transactionList,
+                {
+                    message: `${senderName} sent ${amount}tl to ${recieverName}`,
+                },
+            ]);
+            state.userList.forEach((u) => {
+                if (u.name === senderName) {
+                    setState("userList", [{name: u.name, balance: (parseInt(u.balance) - (amount)).toString()}])
+                }
+                if (u.name === recieverName) {
+                    setState("userList", [{name: u.name, balance: (parseInt(u.balance) + amount).toString()}])
+                }
+            })
+        } else {
+            setState("transactionList", [
+                ...state.transactionList,
+                {
+                    message: `The user ${senderName} haven't send money to ${recieverName} because of insufficient balance`,
+                },
+            ]);
+        }
+
+    }
+</script>
+</body>
+</html>
