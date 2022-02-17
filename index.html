@@ -12,8 +12,8 @@
     <div class="col1">
         <div class="addPerson">
             <div class="inputs">
-                <input id="newUserName" placeholder="Name" type="text"/>
-                <input id="balance" placeholder="Balance" type="text"/>
+                <input id="newUserName" placeholder="Name" type="text" aria-label="new-user-name"/>
+                <input id="balance" placeholder="Balance" type="text" aria-label="balance"/>
             </div>
 
             <button class="addButton" onclick="return addUser()">Add User</button>
@@ -26,19 +26,19 @@
         <div class="addTransaction">
             <div class="person">
                 <label>Sender</label>
-                <select id="sender-list">
+                <select id="sender-list" aria-label="sender-list">
 
                 </select>
             </div>
             <div class="person">
                 <label>Reciever</label>
-                <select id="reciever-list">
+                <select id="reciever-list" aria-label="reciever-list">
 
                 </select>
             </div>
             <div class="person">
                 <label>Amount</label>
-                <input id="amount" placeholder="Amount" type="number"/>
+                <input id="amount" placeholder="Amount" type="number" aria-label="amount"/>
             </div>
             <button class="submitButton" onclick="return addTransaction()">Send</button>
         </div>
@@ -130,7 +130,6 @@
         const recieverName = document.getElementById("reciever-list").value;
         const amount = parseInt(document.getElementById("amount").value);
         const sender = [...state.userList].find((u) => u.name === senderName);
-        const reciever = [...state.userList].find((u) => u.name === recieverName);
 
         if (parseInt(sender.balance) >= amount) {
             setState("transactionList", [
@@ -140,11 +139,13 @@
                 },
             ]);
             state.userList.forEach((u) => {
-                if (u.name === senderName) {
-                    setState("userList", [{name: u.name, balance: (parseInt(u.balance) - (amount)).toString()}])
-                }
+
                 if (u.name === recieverName) {
                     setState("userList", [{name: u.name, balance: (parseInt(u.balance) + amount).toString()}])
+                }
+                if (u.name === senderName) {
+                    setState("userList", [{name: u.name, balance: (u.balance - amount).toString()}])
+
                 }
             })
         } else {
