@@ -49,11 +49,13 @@
     </div>
 </div>
 <script>
+    //İnitial state for user-list and transaction-list
     const state = {
         userList: [],
         transactionList: [],
     }
 
+    //Dom element creation function for "li"
     function Li(list, user) {
         list.forEach(function (item) {
             const newLi = document.createElement("li");
@@ -63,6 +65,7 @@
         });
     }
 
+    //Dom element creation for "li" element in transaction table
     function Li2(list, user) {
         list.forEach(function (item) {
             const newLi = document.createElement("li");
@@ -72,6 +75,8 @@
         });
     }
 
+    //Dom element creation for "option" element to create users for transaction table,
+    //Whenever we create a new user, a new option element will created
     function Option(list, user) {
         list.forEach(function (item) {
             const newOption = document.createElement("option");
@@ -81,6 +86,8 @@
         });
     }
 
+    //Function for create userlist. It finds the user-list element and calls the function
+    //Li to create userlist and also Option function to create option for transaction users
     function renderUserList() {
         const users = [document.getElementById("user-list")];
         users.forEach(function (user) {
@@ -90,6 +97,7 @@
         });
     }
 
+    //For each transaction it calls the Li2 function to create transaction history
     function renderTransactions() {
         const transactions = [document.getElementById("transaction-history")];
         transactions.forEach(function (transaction) {
@@ -99,6 +107,7 @@
         });
     }
 
+    // For each created user it calls Option function to create transaction userlist
     function renderOption() {
         const transactionUsers = [document.getElementById("sender-list"), document.getElementById("reciever-list")];
         transactionUsers.forEach(function (transactionUser) {
@@ -107,12 +116,14 @@
         });
     }
 
+    //Function that set state to a newValue, after any state changed user list and transaction history will be updated
     function setState(stateName, newValue) {
         state[stateName] = newValue;
         renderUserList();
         renderTransactions();
     }
 
+    //It gets the elements newUsername and balance to create userlist with updating user list state
     function addUser() {
         const userName = document.getElementById("newUserName").value;
         const userBalance = document.getElementById("balance").value;
@@ -125,6 +136,8 @@
         ]);
     }
 
+    //It gets the elements sender-list, reciever-list and balance to create transaction list with updating transaction list
+    //and userlist states.
     function addTransaction() {
         const senderName = document.getElementById("sender-list").value;
         const recieverName = document.getElementById("reciever-list").value;
@@ -139,16 +152,20 @@
                 },
             ]);
             state.userList.forEach((u) => {
-
                 if (u.name === recieverName) {
-                    setState("userList", [{name: u.name, balance: (parseInt(u.balance) + amount).toString()}])
+                    setState("userList", [...state.userList, {
+                        name: u.name,
+                        balance: (parseInt(u.balance) + amount).toString()
+                    }])
                 }
                 if (u.name === senderName) {
-                    setState("userList", [{name: u.name, balance: (u.balance - amount).toString()}])
+                    setState("userList", [...state.userList, {name: u.name, balance: (u.balance - amount).toString()}])
 
                 }
             })
+
         } else {
+            //Create a message if user balance is insufficient
             setState("transactionList", [
                 ...state.transactionList,
                 {
